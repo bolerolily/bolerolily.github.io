@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="bolerolily&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      Nginx下安装配置WAF Naxsi | Hexo
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/plugins/gitment.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  <script src="/js/qrious.js"></script>
+<script src="/js/gitment.js"></script>
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hexo</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">主页</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">标签</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">归档</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">项目</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">关于</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">主页</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">标签</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">归档</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">项目</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">关于</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>Nginx下安装配置WAF Naxsi</h2>
+  <p class="post-date">2018-08-19</p>
+  <div class="arrow-down">
+    <a href="javascript:;" target="_blank" rel="noopener"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><p>本文主要讲一下如何用第三方Nginx模块Naxsi来构建一个可用的WAF。</p>
+<h2 id="关于Naxsi"><a href="#关于Naxsi" class="headerlink" title="关于Naxsi"></a>关于Naxsi</h2><p>Naxsi是一个开放源代码、高效、低维护规则的Nginx Web应用防火墙模块，它的主要目标是帮助人们加固Web应用程序，以抵御SQL注入、跨站脚本、跨域伪造请求、本地和远程文件等包含的漏洞。</p>
+<p>Naxsi与其它WAF的区别是，它不靠后签名来检测和阻止攻击。它使用一个简单的模型，而不是试图发现已知的攻击，它在HTTP请求/参数检测意外的字符。</p>
+<p>同为开源WAF,跟Modsecurity的不同是,它对Nginx的兼容性非常好,而且不依赖现有规则库。单单基于规则库的拦截可能需要经常更新,且容易被绕过,防御起来比较被动,而Naxsi安装定制都非常简单方便,占用系统资源相对较少,对实际业务的适用性更强[方便的白名单设置],有一定的学习能力,不过,实际测试中貌似暂时只能拦截从get或者post过来的数据,这也是个小遗憾。</p>
+<p>更详细的信息请见<a href="https://github.com/nbs-system/naxsi" target="_blank" rel="noopener">Naxsi官网</a>。</p>
+<h2 id="安装Naxsi"><a href="#安装Naxsi" class="headerlink" title="安装Naxsi"></a>安装Naxsi</h2><p>首先运行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -V</span><br></pre></td></tr></table></figure>
+
+<p>可以看到现有的模块，复制保存一下备用。</p>
+<pre><code>configure arguments: --prefix=/usr/local/nginx --user=www --group=www \ 
+--with-http_stub_status_module --with-http_v2_module \
+--with-http_ssl_module --with-http_gzip_static_module --with-\
+http_realip_module --with-http_flv_module --with-http_mp4_module \
+--with-openssl=../openssl-1.0.2l --with-pcre=../pcre-8.40 \
+--with-pcre-jit --with-ld-opt=-ljemalloc</code></pre><p>Naxsi应该使用所有高于0.8.X的Nginx版本。Naxsi版本可以在<a href="https://github.com/nbs-system/naxsi" target="_blank" rel="noopener">https://github.com/nbs-system/naxsi</a>这里，选择releases –&gt; Tags查看版本号。</p>
+<p>假设服务器现有Nginx版本为1.12.1，下载Nginx和Naxsi并解压，然后进入Nginx目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget http://nginx.org/download/nginx-1.12.1.tar.gz</span><br><span class="line">wget https://github.com/nbs-system/naxsi/archive/0.55.3.tar.gz</span><br><span class="line">tar xvzf nginx-1.12.1.tar.gz </span><br><span class="line">tar xvzf 0.55.3.tar.gz</span><br><span class="line">cd nginx-1.12.1/</span><br></pre></td></tr></table></figure>
+
+<p>Naxsi不要求任何特定的依赖，前提是它需要的 libpcre，libssl，zlib，gzip这些Nginx已经集成了。</p>
+<p>然后进行编译（记得在 ./configure 后面加上你之前备份的模块和–add-module=../naxsi-0.55.3/naxsi_src/),命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">./configure --prefix=/usr/local/nginx --user=www --group=www \</span><br><span class="line">--add-module=../naxsi-0.55.3/naxsi_src/ \</span><br><span class="line">--with-http_stub_status_module --with-http_v2_module \</span><br><span class="line">--with-http_ssl_module --with-http_gzip_static_module \</span><br><span class="line">--with-http_realip_module --with-http_flv_module \</span><br><span class="line">--with-http_mp4_module --with-openssl=../openssl-1.0.2l \</span><br><span class="line">--with-pcre=../pcre-8.40 --with-pcre-jit --with-ld-opt=-ljemalloc</span><br><span class="line">make #不要make install，否则会覆盖原来的文件</span><br></pre></td></tr></table></figure>
+
+<p>等待编译完成。此时，Naxsi 安装完成。</p>
+<p>然后替换nginx二进制文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cp /usr/local/nginx/sbin/nginx /usr/local/nginx/sbin/nginx.bak</span><br><span class="line">cp ./sbin/nginx /usr/local/nginx/sbin/</span><br></pre></td></tr></table></figure>
+
+<p>如果提示 cp: cannot create regular file ‘/usr/local/nginx/sbin/nginx’: Text file busy ，请先 service nginx stop。</p>
+<p>最后检查 nginx 模块。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -V</span><br></pre></td></tr></table></figure>
+
+<p>看到有 –add-module=../naxsi-0.55.3/naxsi_src/ 就成功了。</p>
+<h2 id="配置Naxsi"><a href="#配置Naxsi" class="headerlink" title="配置Naxsi"></a>配置Naxsi</h2><p>首先将naxsi-0.55.3/naxsi_config的naxsi_core.rules拷贝至nginx.conf所在目录。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /path/to/naxsi-0.55.3/naxsi_config/naxsi_core.rules  /usr/local/nginx/conf/</span><br></pre></td></tr></table></figure>
+
+<p>修改Nginx主配置文件nginx.conf，在http部分插入以下内容。</p>
+<pre><code>http {
+    include naxsi_core.rules;  #导入Naxsi核心规则
+    ...
+}</code></pre><p>同样，在nginx.conf的server部分进行如下配置。</p>
+<pre><code>location / {
+    SecRulesEnabled; #开启 naxsi
+    #LearningMode; #学习模式,只记录,不拦截,方便自己设置白名单，生产环境则需要关闭
+    DeniedUrl &quot;/RequestDenied&quot;; #定义阻止请求的位置
+    #CheckRules, 确定 naxsi 何时采取行动
+    CheckRule &quot;$SQL &gt;= 8&quot; BLOCK;
+    CheckRule &quot;$RFI &gt;= 8&quot; BLOCK；
+    CheckRule &quot;$TRAVERSAL &gt;= 4&quot; BLOCK;
+    CheckRule &quot;$EVADE &gt;= 4&quot; BLOCK;
+    CheckRule &quot;$XSS &gt;= 8&quot; BLOCK;
+    error_log logs/foo.log;#naxsi 日志文件
+    ...
+}
+...
+location /RequestDenied {
+    return 403;
+}    </code></pre><h2 id="测试Naxsi"><a href="#测试Naxsi" class="headerlink" title="测试Naxsi"></a>测试Naxsi</h2><p>检查Nginx配置文件是否正确修改。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/path/to/nginx/sbin/nginx -t</span><br></pre></td></tr></table></figure>
+<p>结果显示如下，则说明正确修改配置信息。</p>
+<p><img src="https://github.com/bolerolily/MyPostImage/blob/master/2018/08/2018-08-19%20Nginx%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%B5%8B%E8%AF%95.JPG?raw=true" alt="Nginx配置文件测试"></p>
+<p>重启Nginx。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service nginx reload</span><br></pre></td></tr></table></figure>
+
+<p>浏览器中输入你的网站地址并连接?a=&lt;&gt;‘。如果出现 403 错误，并且在 foo.log 中出现 NAXSI_FMT开头的日志，则Naxsi 启用成功。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>1.<a href="https://github.com/nbs-system/naxsi/wiki" target="_blank" rel="noopener">Naxsi Wiki</a><br>2.<a href="http://f2ex.cn/nginx-installed-configuration-naxsi-waf/" target="_blank" rel="noopener">nginx下安装配置naxsi waf防火墙（附完整编译、配置）</a><br>3.<a href="https://www.hi-linux.com/posts/3282.html" target="_blank" rel="noopener">利用Naxsi在Nginx上构建WAF</a><br>4.<a href="https://klionsec.github.io/2017/09/18/naxsiwaf/" target="_blank" rel="noopener">定制轻量高效的WAF Naxsi (一)</a></p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Web安全" >
+    <span class="tag-code">Web安全</span>
+  </a>
+
+  <a href="/tags#Naxsi" >
+    <span class="tag-code">Naxsi</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2018/08/08/%E5%88%A9%E7%94%A8Git-Hooks%E4%B8%8Ersync%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/">
+        <span class="nav-arrow">← </span>
+        
+          利用Git Hooks与rsync集群部署
+        
+      </a>
+    
+    
+      <a class="nav-right" href="/2018/08/21/Naxsi-%E9%85%8D%E7%BD%AE%E7%99%BD%E5%90%8D%E5%8D%95/">
+        
+          Naxsi 配置白名单
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#关于Naxsi"><span class="toc-nav-text">关于Naxsi</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#安装Naxsi"><span class="toc-nav-text">安装Naxsi</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#配置Naxsi"><span class="toc-nav-text">配置Naxsi</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#测试Naxsi"><span class="toc-nav-text">测试Naxsi</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#参考资料"><span class="toc-nav-text">参考资料</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2018/08/19/Nginx下安装配置WAF-Naxsi/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+     // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+        
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+
+    // qrcode
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+
+    // gitment
+    var gitmentConfig = "bolerolily";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "Nginx下安装配置WAF Naxsi",
+        owner: "bolerolily",
+        repo: "bolerolily.github.io",
+        oauth: {
+          client_id: "6b74b4aafe5873e44db3",
+          client_secret: "b13589164412f089a62a44b1cbb6d785b05d5a4c"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  })();
+</script>
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 <a href="https://github.com/bolerolily" target="_blank" rel="noopener">bolerolily</a> | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>

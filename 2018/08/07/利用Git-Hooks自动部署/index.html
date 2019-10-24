@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="bolerolily&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      利用Git Hooks自动部署 | Hexo
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/plugins/gitment.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  <script src="/js/qrious.js"></script>
+<script src="/js/gitment.js"></script>
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hexo</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">主页</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">标签</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">归档</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">项目</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">关于</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">主页</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">标签</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">归档</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">项目</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">关于</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>利用Git Hooks自动部署</h2>
+  <p class="post-date">2018-08-07</p>
+  <div class="arrow-down">
+    <a href="javascript:;" target="_blank" rel="noopener"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><p>Git是目前世界上最先进的分布式版本控制系统（没有之一）。开发者需要将提交到Git服务器上的代码进一步部署到Web服务器上。如果能够在提交代码到Git服务器的同时进行代码的自动部署则是最方便不过了。这篇文章中将会提供一个使用Git hooks进行自动部署的实例。</p>
+<h2 id="Git-hooks"><a href="#Git-hooks" class="headerlink" title="Git hooks"></a>Git hooks</h2><p>Git hooks是在 Git 仓库中特定事件(certain points)触发后被调用的脚本。通过钩子可以自定义 Git内部的相关（如 git push）行为，在开发周期中的关键点触发自定义的行为。Git 含有两种类型的钩子：客户端的和服务器端的。客户端的hooks由诸如提交和合并这样的操作所调用，而服务器端hooks作用于诸如接收被推送的提交这样的联网操作。Git服务器的搭建以及相关操作参照<a href="https://bolerolily.github.io/2018/08/02/%E6%90%AD%E5%BB%BAGit%E6%9C%8D%E5%8A%A1%E5%99%A8/" target="_blank" rel="noopener">搭建Git服务器</a>。</p>
+<h2 id="自动部署理论"><a href="#自动部署理论" class="headerlink" title="自动部署理论"></a>自动部署理论</h2><p>首先要明确代码的分布情况，开发者电脑上的本地仓库、Git服务器上的远端仓库、web服务器上的另一个本地仓库（浏览器访问的就是这里的代码）。实现自动部署就是要当从开发者本地仓库提交代码到远端仓库的时候，自动把代码部署到web服务器的本地仓库，实现开发者本地仓库和web服务器的本地仓库的同步(即通过Git hooks中的post-receive脚本文件)。<strong>本文的Git服务器和Web服务器是同一台服务器。</strong></p>
+<h2 id="原理与流程"><a href="#原理与流程" class="headerlink" title="原理与流程"></a>原理与流程</h2><ol>
+<li>用户在客户端执行git push操作</li>
+<li>远程仓库发现有用户执行了push操作，就会执行一个脚本post-receive</li>
+<li>在post-receive脚本中，将git仓库的代码拷贝到web站点目录下</li>
+</ol>
+<h2 id="创建Git仓库"><a href="#创建Git仓库" class="headerlink" title="创建Git仓库"></a>创建Git仓库</h2><p>在服务器端上创建Git仓库，有两种方式：</p>
+<ol>
+<li><p>Git普通仓库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git --bare init /path/to/test.git</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Git裸仓库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git init /path/to/test.git</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>两者区别：</p>
+<p>普通git仓库的目录结构就和代码目录结构一致，只多了.git目录。.git目录中包含了git的一些配置等信息。裸仓库只保存了一些配置信息等，肉眼找不到上传的代码。</p>
+<p>Git普通仓库和Git裸仓库的hooks所在位置不同。Git普通仓库hooks在.git/hooks/中，Git裸仓库hooks在hooks/中。hooks要做的事就是将代码从仓库中拷贝到web目录。</p>
+<h2 id="编写Git-hooks脚本"><a href="#编写Git-hooks脚本" class="headerlink" title="编写Git hooks脚本"></a>编写Git hooks脚本</h2><p>在上述hooks目录中，创建post-receive文件，添加内容如下：</p>
+<pre><code>#!/bin/sh
+
+DEPLOY_PATH=写Web站点目录
+
+#将 master 以zip格式打包到指定文件（裸仓库中执行）
+echo &quot;git账号的密码&quot; | sudo -S git archive --format zip --output file.zip master
+
+#将打包好的剪切到web目录
+echo &quot;git账号的密码&quot; | sudo -S mv file.zip $DEPLOY_PATH
+
+unset GIT_DIR
+cd $DEPLOY_PATH
+echo &quot;git账号的密码&quot; | sudo -S unzip -o file.zip 
+echo &quot;git账号的密码&quot; | sudo -S rm -rf file.zip 
+echo &quot;git账号的密码&quot; | sudo -S chown www:www -R $DEPLOY_PATH</code></pre><p>保存后赋予可执行权限：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod  +x  /path/to/test.git/hooks/post-receive</span><br><span class="line">sudo chown -R git:git /path/to/test.git</span><br></pre></td></tr></table></figure>
+<p>这里使用echo “git账号的密码” | sudo -S Command 是为了解决出现remote…Operation Not Permitted问题。</p>
+<p>然后通过Git Bash在本地对远程仓库进行增加或删除修改操作，接着执行git push相关命令之后，便可完成代码的自动部署。关于Git Bash的相关内容可查看<a href="https://bolerolily.github.io/2018/07/27/%E4%BD%BF%E7%94%A8Hexo-Vexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" target="_blank" rel="noopener">使用Hexo-Vexo搭建个人博客</a>的安装git节。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>1.<a href="https://aotu.io/notes/2017/04/10/githooks/index.html" target="_blank" rel="noopener">用 Git 钩子进行简单自动部署</a><br>2.<a href="https://www.cnblogs.com/wowchky/p/9177036.html" target="_blank" rel="noopener">使用 Git Hook 实现网站的自动部署</a><br>3.<a href="https://blog.csdn.net/u010837612/article/details/70825225?utm_source=itdadao&utm_medium=referral" target="_blank" rel="noopener">git hook实现代码自动部署</a></p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Git服务器" >
+    <span class="tag-code">Git服务器</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2018/08/02/%E6%90%AD%E5%BB%BAGit%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+        <span class="nav-arrow">← </span>
+        
+          搭建Git服务器
+        
+      </a>
+    
+    
+      <a class="nav-right" href="/2018/08/08/%E5%88%A9%E7%94%A8Git-Hooks%E4%B8%8Ersync%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/">
+        
+          利用Git Hooks与rsync集群部署
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Git-hooks"><span class="toc-nav-text">Git hooks</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#自动部署理论"><span class="toc-nav-text">自动部署理论</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#原理与流程"><span class="toc-nav-text">原理与流程</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#创建Git仓库"><span class="toc-nav-text">创建Git仓库</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#编写Git-hooks脚本"><span class="toc-nav-text">编写Git hooks脚本</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#参考资料"><span class="toc-nav-text">参考资料</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2018/08/07/利用Git-Hooks自动部署/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+     // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+        
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+
+    // qrcode
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+
+    // gitment
+    var gitmentConfig = "bolerolily";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "利用Git Hooks自动部署",
+        owner: "bolerolily",
+        repo: "bolerolily.github.io",
+        oauth: {
+          client_id: "6b74b4aafe5873e44db3",
+          client_secret: "b13589164412f089a62a44b1cbb6d785b05d5a4c"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  })();
+</script>
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 <a href="https://github.com/bolerolily" target="_blank" rel="noopener">bolerolily</a> | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>

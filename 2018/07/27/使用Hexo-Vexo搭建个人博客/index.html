@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="bolerolily&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      使用Hexo-Vexo搭建个人博客 | Hexo
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/plugins/gitment.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  <script src="/js/qrious.js"></script>
+<script src="/js/gitment.js"></script>
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hexo</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">主页</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">标签</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">归档</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">项目</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">关于</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">主页</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">标签</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">归档</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">项目</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">关于</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>使用Hexo-Vexo搭建个人博客</h2>
+  <p class="post-date">2018-07-27</p>
+  <div class="arrow-down">
+    <a href="javascript:;" target="_blank" rel="noopener"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><p>第一次使用Github搭建个人博客，记录一下整个过程~</p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>要使用Hexo，需要在你的系统中支持Nodejs以及Git，如果还没有，选择对应的操作系统版本进行安装吧！本文则是针对Win7 64位的操作系统。</p>
+<h3 id="安装-node-js"><a href="#安装-node-js" class="headerlink" title="安装 node.js"></a>安装 node.js</h3><p>下载地址 <a href="https://nodejs.org/en/" target="_blank" rel="noopener">node.js</a><br>直接双击下载下来的msi文件，一路下一步就ok了，安装完之后调出命令行或者node命令输入终端，输入node -v看到版本信息就表明安装成功了。如果自定义安装路径，则需要修改环境变量中Path的对应路径。</p>
+<h3 id="安装-git"><a href="#安装-git" class="headerlink" title="安装 git"></a>安装 git</h3><p>下载地址 <a href="https://git-scm.com/" target="_blank" rel="noopener">git</a><br>直接双击下载下来的git安装程序，同node安装，安装完之后右键发现多了两个Git GUI Here 、Git Bash Here，点击后者，然后输入git –version出现版本信息就表明安装成功了。</p>
+<h2 id="git连接github配置"><a href="#git连接github配置" class="headerlink" title="git连接github配置"></a>git连接github配置</h2><h3 id="创建新repository"><a href="#创建新repository" class="headerlink" title="创建新repository"></a>创建新repository</h3><p>名称必须要遵守格式：账户名.github.io。选择public，并且需要勾选Initialize this repository with a README。</p>
+<p>创建项目成功后，便可通过https://账户名.github.io以网页的形式访问所创建的项目。</p>
+<h3 id="设置用户名及邮箱："><a href="#设置用户名及邮箱：" class="headerlink" title="设置用户名及邮箱："></a>设置用户名及邮箱：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global user.name &quot;username&quot;</span><br><span class="line">$ git config --global user.email &quot;xxx@qq.com&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置SSH-key："><a href="#配置SSH-key：" class="headerlink" title="配置SSH key："></a>配置SSH key：</h3><p>检查本机是否存在的ssh密钥</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cd ~/. ssh</span><br></pre></td></tr></table></figure>
+
+<p>如果提示：No such file or directory 说明你是第一次使用git，使用下述命令生成 ssh key</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t rsa -C &quot;邮件地址&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然后连续3次回车，最终会生成一个文件在用户目录下，打开用户目录，找到.ssh\id_rsa.pub文件，记事本打开并复制里面的内容，打开你的github主页，进入个人设置 -&gt; SSH and GPG keys -&gt; New SSH key，将刚复制的内容粘贴到key那里，title随便填，保存。</p>
+<h3 id="测试是否成功"><a href="#测试是否成功" class="headerlink" title="测试是否成功"></a>测试是否成功</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+
+<p>如果提示Are you sure you want to continue connecting (yes/no)?，输入yes，然后会看到：<br><img src="https://github.com/bolerolily/MyPostImage/blob/master/2018/07/2018-07-27%20ssh%E8%BF%9E%E6%8E%A5%E6%88%90%E5%8A%9F%E6%88%AA%E5%9B%BE.JPG?raw=true" alt="ssh连接成功截图"></p>
+<h2 id="搭建个人博客"><a href="#搭建个人博客" class="headerlink" title="搭建个人博客"></a>搭建个人博客</h2><h3 id="安装hexo"><a href="#安装hexo" class="headerlink" title="安装hexo"></a>安装hexo</h3><ol>
+<li><p>安装淘宝源的cnpm</p>
+<p> 在git bash中输入下面整段</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ alias cnpm=&quot;npm --registry=https://registry.npm.taobao.org \</span><br><span class="line">--cache=$HOME/.npm/.cache/cnpm \</span><br><span class="line">--disturl=https://npm.taobao.org/dist \</span><br><span class="line">--userconfig=$HOME/.cnpmrc&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装 hexo </p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cnpm install -g hexo</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装个人博客</p>
+<p> 进入到 你本地的博客存放路径，例如 E:\hexo\blog</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd e:</span><br><span class="line">$ cd hexo/blog/</span><br></pre></td></tr></table></figure>
+
+<p> 初始化</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo init</span><br></pre></td></tr></table></figure>
+
+<p> 选择Vexo主题，你还可以从<a href="https://hexo.io/themes/" target="_blank" rel="noopener">hexo themes</a>上选择你喜欢的主题。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git clone https://github.com/yanm1ng/hexo-theme-vexo.git themes/vexo</span><br><span class="line">$ cp -R themes/vexo/_source/* source/</span><br></pre></td></tr></table></figure>
+
+<p> 接着，打开hexo\blog\themes\vexo\_config.yml，将用户信息修改为自己的信息。由于我的网站需求较少，因此将donate、qrcode等模块均注释掉。</p>
+<p> 网页内容的修改则需要对hexo\blog\themes\vexo\layout下的文档进行相应的改动。</p>
+</li>
+<li><p>增加评论功能</p>
+<p> 首先在hexo\blog\themes\vexo\_config.yml中增加如下内容，为个人博客使用Gitment增加评论功能。</p>
+<pre><code>comment: gitment</code></pre><p> 然后去<a href="https://github.com/settings/applications/new" target="_blank" rel="noopener">New OAuth App</a>为你的博客申请一个密钥。</p>
+<pre><code>Application name:随便写
+Homepage URL:写博客地址
+Application description:描述,可随意写
+Authorization callback URL:这个必须写博客地址</code></pre><p> 申请好之后点注册,然后就可以看到ClientID和Client Secret，然后在comment: gitment后增加如下内容。</p>
+<pre><code>gitment_oauth_owner：github用户名
+gitment_oauth_repo：个人博客所对应的repository名称
+gitment_oauth_id：ClientID
+gitment_oauth_secret：Client Secret</code></pre></li>
+</ol>
+<h3 id="部署到Github上"><a href="#部署到Github上" class="headerlink" title="部署到Github上"></a>部署到Github上</h3><p>打开hexo\blog\_config.yml，修改主题为vexo，并在最后添加如下内容。</p>
+<pre><code>deploy:
+  type: git
+  repository: git@github.com:bolerolily/bolerolily.github.io.git
+  branch: master</code></pre><p>其中，repository所填写的内容可通过如下图片所呈现的方式获取，记得选择”Use SSH”。<br><img src="https://github.com/bolerolily/MyPostImage/blob/master/2018/07/2018-07-27%20%E8%8E%B7%E5%8F%96repository%E5%9C%B0%E5%9D%80.JPG?raw=true" alt="获取repository地址"></p>
+<p>安装扩展</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cnpm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+
+<p>提交到github</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo d -g</span><br></pre></td></tr></table></figure>
+
+<p>到此，博客基本就搭建完毕了。</p>
+<h3 id="发布一篇文章"><a href="#发布一篇文章" class="headerlink" title="发布一篇文章"></a>发布一篇文章</h3><p>发布文章，首先需要使用命令创建markdown文件，默认在hexo\blog\source\_post目录下生成。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new &quot;Your Article Name&quot;</span><br></pre></td></tr></table></figure>
+
+<p>对markdown文件编写完成后，重新部署到Github上即可。</p>
+<h3 id="删除一篇文章"><a href="#删除一篇文章" class="headerlink" title="删除一篇文章"></a>删除一篇文章</h3><p>首先进入到hexo\blog\source\_post 目录下，找到想要删除的markdown文件，在本地直接执行删除。然后重新部署到Github上即可。</p>
+<h3 id="删除标签"><a href="#删除标签" class="headerlink" title="删除标签"></a>删除标签</h3><p>在hexo\blog\db.json文件下找到“Tag”字段。删除如下字段，即可删除对应的标签其他。</p>
+<pre><code>{&quot;name&quot;:&quot;其他&quot;,&quot;_id&quot;:&quot;cjlqd7wjo0004ust0j9hhlpz3&quot;}</code></pre><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>1.<a href="http://blog.51cto.com/2226894115/2063440" target="_blank" rel="noopener">github个人博客搭建</a></p>
+<p>2.<a href="https://www.cnblogs.com/fengxiongZz/p/7707219.html" target="_blank" rel="noopener">使用Hexo+Github一步步搭建属于自己的博客（基础）</a></p>
+<p>3.<a href="http://ibruce.info/2013/11/22/hexo-your-blog/" target="_blank" rel="noopener">hexo你的博客</a></p>
+<p>4.<a href="https://blog.csdn.net/time888/article/details/70249241" target="_blank" rel="noopener">hexo怎么删除文章？</a></p>
+<p>5.<a href="https://sjq597.github.io/2018/05/18/Hexo-%E4%BD%BF%E7%94%A8Gitment%E8%AF%84%E8%AE%BA%E5%8A%9F%E8%83%BD/" target="_blank" rel="noopener">Hexo-使用Gitment评论功能</a></p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#其他" >
+    <span class="tag-code">其他</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+    
+      <a class="nav-right" href="/2018/08/02/%E6%90%AD%E5%BB%BAGit%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+        
+          搭建Git服务器
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#环境准备"><span class="toc-nav-text">环境准备</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#安装-node-js"><span class="toc-nav-text">安装 node.js</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#安装-git"><span class="toc-nav-text">安装 git</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#git连接github配置"><span class="toc-nav-text">git连接github配置</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#创建新repository"><span class="toc-nav-text">创建新repository</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#设置用户名及邮箱："><span class="toc-nav-text">设置用户名及邮箱：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#配置SSH-key："><span class="toc-nav-text">配置SSH key：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#测试是否成功"><span class="toc-nav-text">测试是否成功</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#搭建个人博客"><span class="toc-nav-text">搭建个人博客</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#安装hexo"><span class="toc-nav-text">安装hexo</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#部署到Github上"><span class="toc-nav-text">部署到Github上</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#发布一篇文章"><span class="toc-nav-text">发布一篇文章</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#删除一篇文章"><span class="toc-nav-text">删除一篇文章</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#删除标签"><span class="toc-nav-text">删除标签</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#参考资料"><span class="toc-nav-text">参考资料</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2018/07/27/使用Hexo-Vexo搭建个人博客/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+     // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+        
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+
+    // qrcode
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+
+    // gitment
+    var gitmentConfig = "bolerolily";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "使用Hexo-Vexo搭建个人博客",
+        owner: "bolerolily",
+        repo: "bolerolily.github.io",
+        oauth: {
+          client_id: "6b74b4aafe5873e44db3",
+          client_secret: "b13589164412f089a62a44b1cbb6d785b05d5a4c"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  })();
+</script>
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 <a href="https://github.com/bolerolily" target="_blank" rel="noopener">bolerolily</a> | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>

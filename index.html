@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="bolerolily&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      Hexo
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/plugins/gitment.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  <script src="/js/qrious.js"></script>
+<script src="/js/gitment.js"></script>
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hexo</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link active">主页</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">标签</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">归档</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">项目</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">关于</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link mobile-active">主页</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">标签</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">归档</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">项目</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">关于</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <main class="app-body">
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2019/10/24/hello-world/">Hello World</a>
+      </h2>
+      <p class="article-date">October 24, 2019</p>
+      
+      <div class="article-summary">
+        
+          Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer ...
+        
+      </div>
+      <a class="more" href="/2019/10/24/hello-world/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/09/06/CentOS7%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AEiptables%E9%98%B2%E7%81%AB%E5%A2%99/">CentOS7安装和配置iptables防火墙</a>
+      </h2>
+      <p class="article-date">September 6, 2018</p>
+      
+        
+  <a href="/tags#iptables" >
+    <span class="tag-code">iptables</span>
+  </a>
+
+  <a href="/tags#Web安全" >
+    <span class="tag-code">Web安全</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          本文主要介绍一下CentOS7下如何安装和配置iptables防火墙。
+环境配置从CentOS7(RHEL7)开始，官方的标准防火墙设置软件从iptables变更为firewalld。 因此，为了使Fail2ban与iptables联动，需禁用自带的firewalld服务，同时安装iptab ...
+        
+      </div>
+      <a class="more" href="/2018/09/06/CentOS7%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AEiptables%E9%98%B2%E7%81%AB%E5%A2%99/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/09/05/CentOS7%E4%B8%8B%E5%AE%89%E8%A3%85%E5%92%8C%E4%BD%BF%E7%94%A8Fail2ban/">CentOS7下安装和使用Fail2ban</a>
+      </h2>
+      <p class="article-date">September 5, 2018</p>
+      
+        
+  <a href="/tags#Web安全" >
+    <span class="tag-code">Web安全</span>
+  </a>
+
+  <a href="/tags#Fail2ban" >
+    <span class="tag-code">Fail2ban</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          本文主要介绍一下CentOS7下Fail2ban安装以及如何和iptables联动来阻止恶意扫描和密码猜测等恶意攻击行为。
+从CentOS7开始，官方的标准防火墙设置软件从iptables变更为firewalld。 为了使Fail2ban与iptables联动，需禁用自带的firewalld ...
+        
+      </div>
+      <a class="more" href="/2018/09/05/CentOS7%E4%B8%8B%E5%AE%89%E8%A3%85%E5%92%8C%E4%BD%BF%E7%94%A8Fail2ban/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/08/21/Naxsi-%E9%85%8D%E7%BD%AE%E7%99%BD%E5%90%8D%E5%8D%95/">Naxsi 配置白名单</a>
+      </h2>
+      <p class="article-date">August 21, 2018</p>
+      
+        
+  <a href="/tags#Web安全" >
+    <span class="tag-code">Web安全</span>
+  </a>
+
+  <a href="/tags#Naxsi" >
+    <span class="tag-code">Naxsi</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          在Nginx下安装和配置完Naxsi之后，为了能够使网站能够区分非法行为和合法行为，需要管理员将合法行为列入白名单。管理员可以通过分析nginx的错误日志手动添加白名单规则，或者通过密集的自动学习工具(nxapi或nxtool)，这些工具将自动生成有关网站行为的白名单规则。本文主要介绍白名单 ...
+        
+      </div>
+      <a class="more" href="/2018/08/21/Naxsi-%E9%85%8D%E7%BD%AE%E7%99%BD%E5%90%8D%E5%8D%95/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/08/19/Nginx%E4%B8%8B%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEWAF-Naxsi/">Nginx下安装配置WAF Naxsi</a>
+      </h2>
+      <p class="article-date">August 19, 2018</p>
+      
+        
+  <a href="/tags#Web安全" >
+    <span class="tag-code">Web安全</span>
+  </a>
+
+  <a href="/tags#Naxsi" >
+    <span class="tag-code">Naxsi</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          本文主要讲一下如何用第三方Nginx模块Naxsi来构建一个可用的WAF。
+关于NaxsiNaxsi是一个开放源代码、高效、低维护规则的Nginx Web应用防火墙模块，它的主要目标是帮助人们加固Web应用程序，以抵御SQL注入、跨站脚本、跨域伪造请求、本地和远程文件等包含的漏洞。
+Naxs ...
+        
+      </div>
+      <a class="more" href="/2018/08/19/Nginx%E4%B8%8B%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEWAF-Naxsi/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/08/08/%E5%88%A9%E7%94%A8Git-Hooks%E4%B8%8Ersync%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/">利用Git Hooks与rsync集群部署</a>
+      </h2>
+      <p class="article-date">August 8, 2018</p>
+      
+        
+  <a href="/tags#Git服务器" >
+    <span class="tag-code">Git服务器</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          博客利用Git Hooks自动部署针对的是Git服务和Web服务部署在同一台服务器的情况，然而在做项目的时候，Git服务器和Web服务器往往会分离，而且Web服务器往往不止一台。这篇文章中将会提供一个使用Git hooks与rsync进行集群自动部署的实例。
+rsyncrsync具有可以使本 ...
+        
+      </div>
+      <a class="more" href="/2018/08/08/%E5%88%A9%E7%94%A8Git-Hooks%E4%B8%8Ersync%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/08/07/%E5%88%A9%E7%94%A8Git-Hooks%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/">利用Git Hooks自动部署</a>
+      </h2>
+      <p class="article-date">August 7, 2018</p>
+      
+        
+  <a href="/tags#Git服务器" >
+    <span class="tag-code">Git服务器</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          Git是目前世界上最先进的分布式版本控制系统（没有之一）。开发者需要将提交到Git服务器上的代码进一步部署到Web服务器上。如果能够在提交代码到Git服务器的同时进行代码的自动部署则是最方便不过了。这篇文章中将会提供一个使用Git hooks进行自动部署的实例。
+Git hooksGit h ...
+        
+      </div>
+      <a class="more" href="/2018/08/07/%E5%88%A9%E7%94%A8Git-Hooks%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/08/02/%E6%90%AD%E5%BB%BAGit%E6%9C%8D%E5%8A%A1%E5%99%A8/">搭建Git服务器</a>
+      </h2>
+      <p class="article-date">August 2, 2018</p>
+      
+        
+  <a href="/tags#Git服务器" >
+    <span class="tag-code">Git服务器</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          项目有版本控制的需求，所以要在Linux下搭建Git服务器，那就开始吧~
+安装Git服务器端 CentOS7.5 + git（version 1.8.3.1）客户端 Windows7 + git（version 2.18.0.windows.1）
+一般，CentOS操作系统都会安装Git,可 ...
+        
+      </div>
+      <a class="more" href="/2018/08/02/%E6%90%AD%E5%BB%BAGit%E6%9C%8D%E5%8A%A1%E5%99%A8/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/07/27/%E4%BD%BF%E7%94%A8Hexo-Vexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">使用Hexo-Vexo搭建个人博客</a>
+      </h2>
+      <p class="article-date">July 27, 2018</p>
+      
+        
+  <a href="/tags#其他" >
+    <span class="tag-code">其他</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          第一次使用Github搭建个人博客，记录一下整个过程~
+环境准备要使用Hexo，需要在你的系统中支持Nodejs以及Git，如果还没有，选择对应的操作系统版本进行安装吧！本文则是针对Win7 64位的操作系统。
+安装 node.js下载地址 node.js直接双击下载下来的msi文件，一路下 ...
+        
+      </div>
+      <a class="more" href="/2018/07/27/%E4%BD%BF%E7%94%A8Hexo-Vexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">Read more</a>
+    </article>
+  
+
+  
+</main>
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 <a href="https://github.com/bolerolily" target="_blank" rel="noopener">bolerolily</a> | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>

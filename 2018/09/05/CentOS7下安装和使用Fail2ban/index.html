@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="bolerolily&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      CentOS7下安装和使用Fail2ban | Hexo
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/plugins/gitment.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  <script src="/js/qrious.js"></script>
+<script src="/js/gitment.js"></script>
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hexo</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">主页</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">标签</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">归档</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">项目</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">关于</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">主页</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">标签</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">归档</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">项目</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">关于</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>CentOS7下安装和使用Fail2ban</h2>
+  <p class="post-date">2018-09-05</p>
+  <div class="arrow-down">
+    <a href="javascript:;" target="_blank" rel="noopener"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><p>本文主要介绍一下CentOS7下Fail2ban安装以及如何和iptables联动来阻止恶意扫描和密码猜测等恶意攻击行为。</p>
+<p>从CentOS7开始，官方的标准防火墙设置软件从iptables变更为firewalld。 为了使Fail2ban与iptables联动，需禁用自带的firewalld服务，同时安装iptables服务。因此，在进行Fail2ban的安装与使用前需根据博客<a href="https://bolerolily.github.io/2018/09/06/CentOS7%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AEiptables%E9%98%B2%E7%81%AB%E5%A2%99/" target="_blank" rel="noopener">CentOS7安装和配置iptables防火墙</a>进行环境配置。</p>
+<h2 id="关于Fail2ban"><a href="#关于Fail2ban" class="headerlink" title="关于Fail2ban"></a>关于Fail2ban</h2><ul>
+<li><p>Fail2ban可以监视你的系统日志，然后匹配日志的错误信息（正则式匹配）执行相应的屏蔽动作（一般情况下是调用防火墙屏蔽），如:当有人在试探你的HTTP、SSH、SMTP、FTP密码，只要达到你预设的次数，fail2ban就会调用防火墙屏蔽这个IP，而且可以发送e-mail通知系统管理员，是一款很实用、很强大的软件！ </p>
+</li>
+<li><p>Fail2ban由python语言开发，基于logwatch、gamin、iptables、tcp-wrapper、shorewall等。如果想要发送邮件通知道，那还需要安装postfix或sendmail。</p>
+</li>
+<li><p>在外网环境下，有很多的恶意扫描和密码猜测等恶意攻击行为，使用Fail2ban配合iptables，实现动态防火墙是一个很好的解决方案。</p>
+</li>
+</ul>
+<h2 id="安装Fail2ban"><a href="#安装Fail2ban" class="headerlink" title="安装Fail2ban"></a>安装Fail2ban</h2><p>首先需要到Fail2ban官网下载程序源码包，本文中通过稳定版Fail2ban-0.8.14做演示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://codeload.github.com/fail2ban/fail2ban/tar.gz/0.8.14</span><br></pre></td></tr></table></figure>
+
+<p>成功下载之后，解压源码包并进行安装。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -xf 0.8.14.tar.gz</span><br><span class="line">cd fail2ban-0.8.14</span><br><span class="line">python setup.py install</span><br></pre></td></tr></table></figure>
+
+<p>安装完成后要手动生成一下程序的启动脚本。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cp files/redhat-initd /etc/init.d/fail2ban</span><br><span class="line">chkconfig --add fail2ban</span><br></pre></td></tr></table></figure>
+
+<p>使用下列命令检查Fail2ban是否加入开机启动项。结果如下图所示。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chkconfig --list fail2ban</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://github.com/bolerolily/MyPostImage/blob/master/2018/09/2018-09-05%20Fail2ban%E5%8A%A0%E5%85%A5%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF%E5%8A%A8%E9%A1%B9.JPG?raw=true" alt="2018-09-05 Fail2ban加入开机自启动项"></p>
+<p>安装完成后程序文件都是保存在/etc/fail2ban目录下，目录结构如下图所示。</p>
+<p><img src="https://github.com/bolerolily/MyPostImage/blob/master/2018/09/2018-09-05%20Fail2ban%E7%A8%8B%E5%BA%8F%E6%96%87%E4%BB%B6%E7%9A%84%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84.JPG?raw=true" alt="2018-09-05 Fail2ban程序文件的目录结构"></p>
+<p>其中jail.conf为主配置文件，相关的正则匹配规则位于filter.d目录，其它目录/文件一般很少用到，如果需要详细了解可自行搜索。</p>
+<h2 id="配置Fail2ban"><a href="#配置Fail2ban" class="headerlink" title="配置Fail2ban"></a>配置Fail2ban</h2><h3 id="联动iptables"><a href="#联动iptables" class="headerlink" title="联动iptables"></a>联动iptables</h3><p>新建jail.local来覆盖Fail2ban在jail.conf的默认配置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local</span><br><span class="line">vim /etc/fail2ban/jail.local</span><br></pre></td></tr></table></figure>
+<p>对jail.conf做以下两种修改。</p>
+<ol>
+<li><p>防止SSH密码爆破</p>
+<p> [ssh-iptables]模块的配置修改如下。其中，port应按照实际情况填写。</p>
+<pre><code>[ssh-iptables]
+
+enabled  = true
+filter   = sshd
+action   = iptables[name=SSH, port=22, protocol=tcp]
+logpath  = /var/log/secure
+maxretry = 3
+findtime  = 300</code></pre></li>
+<li><p>阻止恶意扫描</p>
+<p> 新增[nginx-dir-scan]模块，配置信息如下。此处，port和logpath应按照实际情况填写。</p>
+<pre><code>[nginx-dir-scan]
+
+enabled = true
+filter = nginx-dir-scan
+action   = iptables[name=nginx-dir-scan, port=443, protocol=tcp]
+logpath = /path/to/nginx/access.log
+maxretry = 1
+bantime = 172800
+findtime  = 300</code></pre><p> 然后在filter.d目录下新建nginx-dir-scan.conf。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cp /etc/fail2ban/filter.d/nginx-http-auth.conf /etc/fail2ban/filter.d/nginx-dir-scan.conf</span><br><span class="line">vim /etc/fail2ban/filter.d/nginx-dir-scan.conf</span><br></pre></td></tr></table></figure>
+
+<p> 对nginx-dir-scan.conf进行修改，具体配置信息如下。</p>
+<pre><code>[Definition]
+
+failregex = &lt;HOST&gt; -.*- .*Mozilla/4.0* .* .*$
+ignoreregex =</code></pre><p> 此处的正则匹配规则是根据nginx的访问日志进行撰写，不同的恶意扫描有不同的日志特征。</p>
+<p> 本文采用此规则是因为在特殊的应用场景下有绝大的把握可以肯定Mozilla/4.0是一些老旧的数据采集软件使用的UA，所以就针对其做了屏蔽。不可否认Mozilla/4.0 这样的客户端虽然是少数，但仍旧存在。因此，此规则并不适用于任何情况。</p>
+<p> 使用如下命令，可以测试正则规则的有效性。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fail2ban-regex /path/to/nginx/access.log /etc/fail2ban/filter.d/nginx-dir-scan.conf</span><br></pre></td></tr></table></figure>
+
+<p> Fail2ban已经内置很多匹配规则，位于filter.d目录下，包含了常见的SSH/FTP/Nginx/Apache等日志匹配，如果都还无法满足需求，也可以自行新建规则来匹配异常IP。总之，使用Fail2ban+iptables来阻止恶意IP是行之有效的办法，可极大提高服务器安全。</p>
+</li>
+</ol>
+<h3 id="变更iptables封禁策略"><a href="#变更iptables封禁策略" class="headerlink" title="变更iptables封禁策略"></a>变更iptables封禁策略</h3><p>Fail2ban的默认iptables封禁策略为 REJECT –reject-with icmp-port-unreachable，需要变更iptables封禁策略为DROP。</p>
+<p>在/etc/fail2ban/action.d/目录下新建文件iptables-blocktype.local。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/fail2ban/action.d/</span><br><span class="line">cp iptables-blocktype.conf iptables-blocktype.local</span><br><span class="line">vim iptables-blocktype.local</span><br></pre></td></tr></table></figure>
+
+<p>修改内容如下：</p>
+<pre><code>[INCLUDES]
+
+after = iptables-blocktype.local
+
+[Init]
+
+blocktype = DROP</code></pre><p>最后，别忘记重启fail2ban使其生效。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart fail2ban</span><br></pre></td></tr></table></figure>
+<h3 id="Fail2ban常用命令"><a href="#Fail2ban常用命令" class="headerlink" title="Fail2ban常用命令"></a>Fail2ban常用命令</h3><p>启动Fail2ban。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start fail2ban</span><br></pre></td></tr></table></figure>
+
+<p>停止Fail2ban。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop fail2ban</span><br></pre></td></tr></table></figure>
+
+<p>开机启动Fail2ban。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable fail2ban</span><br></pre></td></tr></table></figure>
+
+<p>查看被ban IP，其中ssh-iptables为名称，比如上面的[ssh-iptables]和[nginx-dir-scan]。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fail2ban-client status ssh-iptables</span><br></pre></td></tr></table></figure>
+
+<p>添加白名单。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fail2ban-client set ssh-iptables addignoreip IP地址</span><br></pre></td></tr></table></figure>
+
+<p>删除白名单。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fail2ban-client set ssh-iptables delignoreip IP地址</span><br></pre></td></tr></table></figure>
+<p>查看被禁止的IP地址。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -L -n</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>1.<a href="https://www.bnxb.com/linuxserver/27516.html" target="_blank" rel="noopener">centos下fail2ban安装与配置详解 centos7 下安装使用fail2ban</a><br>2.<a href="https://yq.aliyun.com/articles/195078" target="_blank" rel="noopener">Linux系统通过fail2ban对暴力破解进行防护</a><br>3.<a href="http://bookshadow.com/weblog/2017/05/05/fail2ban-iptables-drop/" target="_blank" rel="noopener">fail2ban变更iptables封禁策略为DROP</a><br>4.<a href="https://www.jianshu.com/p/92473cf0acc9" target="_blank" rel="noopener">Fail2ban防止网站CC</a><br>5.<a href="https://www.liukang.com/tag/fail2ban/" target="_blank" rel="noopener">FAIL2BAN ON UBUNTU</a><br>6.<a href="https://www.douban.com/note/626688457/" target="_blank" rel="noopener">CentOS7 - 安装配置Fail2ban教程</a></p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Web安全" >
+    <span class="tag-code">Web安全</span>
+  </a>
+
+  <a href="/tags#Fail2ban" >
+    <span class="tag-code">Fail2ban</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2018/08/21/Naxsi-%E9%85%8D%E7%BD%AE%E7%99%BD%E5%90%8D%E5%8D%95/">
+        <span class="nav-arrow">← </span>
+        
+          Naxsi 配置白名单
+        
+      </a>
+    
+    
+      <a class="nav-right" href="/2018/09/06/CentOS7%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AEiptables%E9%98%B2%E7%81%AB%E5%A2%99/">
+        
+          CentOS7安装和配置iptables防火墙
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#关于Fail2ban"><span class="toc-nav-text">关于Fail2ban</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#安装Fail2ban"><span class="toc-nav-text">安装Fail2ban</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#配置Fail2ban"><span class="toc-nav-text">配置Fail2ban</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#联动iptables"><span class="toc-nav-text">联动iptables</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#变更iptables封禁策略"><span class="toc-nav-text">变更iptables封禁策略</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Fail2ban常用命令"><span class="toc-nav-text">Fail2ban常用命令</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#参考资料"><span class="toc-nav-text">参考资料</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2018/09/05/CentOS7下安装和使用Fail2ban/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+     // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+        
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+
+    // qrcode
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+
+    // gitment
+    var gitmentConfig = "bolerolily";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "CentOS7下安装和使用Fail2ban",
+        owner: "bolerolily",
+        repo: "bolerolily.github.io",
+        oauth: {
+          client_id: "6b74b4aafe5873e44db3",
+          client_secret: "b13589164412f089a62a44b1cbb6d785b05d5a4c"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  })();
+</script>
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 <a href="https://github.com/bolerolily" target="_blank" rel="noopener">bolerolily</a> | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>

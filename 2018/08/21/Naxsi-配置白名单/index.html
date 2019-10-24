@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="bolerolily&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      Naxsi 配置白名单 | Hexo
+    
+  </title>
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/plugins/gitment.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+  <script src="/js/qrious.js"></script>
+<script src="/js/gitment.js"></script>
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hexo</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">主页</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">标签</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">归档</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">项目</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">关于</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">主页</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">标签</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">归档</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">项目</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">关于</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>Naxsi 配置白名单</h2>
+  <p class="post-date">2018-08-21</p>
+  <div class="arrow-down">
+    <a href="javascript:;" target="_blank" rel="noopener"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><p>在Nginx下安装和配置完Naxsi之后，为了能够使网站能够区分非法行为和合法行为，需要管理员将合法行为列入白名单。管理员可以通过分析nginx的错误日志手动添加白名单规则，或者通过密集的自动学习工具(nxapi或nxtool)，这些工具将自动生成有关网站行为的白名单规则。本文主要介绍白名单规则以及如何通过分析nginx错误日志手动添加白名单规则。</p>
+<h2 id="白名单规则配置"><a href="#白名单规则配置" class="headerlink" title="白名单规则配置"></a>白名单规则配置</h2><p>naxsi核心规则文件naxsi_core.rules需要在nginx配置文件nginx.conf下的http部分导入，而naxsi白名单规则文件naxsi_whitelists.rules一般在nginx配置文件nginx.conf下的location部分导入，可放置在CheckRules语句之前。</p>
+<p>location部分对应的配置内容如下。</p>
+<pre><code>include naxsi_whitelists.rules;#导入白名单规则
+SecRulesEnabled;
+DeniedUrl &quot;/RequestDenied&quot;;
+CheckRule &quot;$SQL &gt;= 8&quot; BLOCK;
+CheckRule &quot;$RFI &gt;= 8&quot; BLOCK;
+CheckRule &quot;$TRAVERSAL &gt;=4&quot; BLOCK;
+CheckRule &quot;$EVADE &gt;= 4&quot; BLOCK;
+CheckRule &quot;$XSS &gt;= 8&quot; BLOCK;
+error_log /path/to/foo.log;#配置Naxsi错误日志</code></pre><p>为了区分Naxsi和Nginx的错误日志，可以为Naxsi设置相应的错误日志目录和文件名。在本文中，Naxsi对应的错误日志为foo.log。</p>
+<h2 id="白名单规则语法"><a href="#白名单规则语法" class="headerlink" title="白名单规则语法"></a>白名单规则语法</h2><p>如果服务器安装的是Wordpress或者ruTorrent或者dokuwiki或者drupal等，可以直接在<a href="https://github.com/nbs-system/naxsi-rules" target="_blank" rel="noopener">naxsi-rules</a>找到Naxsi官方制作的白名单。如果都没有找到适合的白名单，就只能自己去配置白名单了。</p>
+<p>白名单规则的语法如下所示。然后介绍语法中的重要组成部分。</p>
+<pre><code>BasicRule wl:ID [negative] [mz:[$URL:target_url]|[match_zone]|[$ARGS_VAR:varname]|[$BODY_VARS:varname]|[$HEADERS_VAR:varname]|[NAME]]</code></pre><h3 id="Whitelisted-ID-wl-…"><a href="#Whitelisted-ID-wl-…" class="headerlink" title="Whitelisted ID (wl:…)"></a>Whitelisted ID (wl:…)</h3><p>这部分指的是哪些拦截规则会进入白名单。以下举例进行说明。</p>
+<p>wl:0 : 把所有拦截规则加入白名单<br>wl:42 : 把ID为42的拦截规则加入白名单<br>wl:42,41,43 : 把ID为42, 41 和 43的拦截规则加入白名单<br>wl:-42 : 把所有拦截规则加入白名单，除了ID为42的拦截规则</p>
+<h3 id="MatchZone-mz-…"><a href="#MatchZone-mz-…" class="headerlink" title="MatchZone (mz:…)"></a>MatchZone (mz:…)</h3><p>这部分指的是本条白名单的生效区域。区域有如下组成部分。</p>
+<ul>
+<li>ARGS: GET的整个参数内容，如: foo=bar&amp;in=%20</li>
+<li>$ARGS_VAR: GET参数的参数名, 如 foo=bar&amp;in=%20中的 foo和in。</li>
+<li>$ARGS_VAR_X: 正则匹配的GET参数的参数名</li>
+<li>HEADERS: 整个HTTP协议头内容</li>
+<li>$HEADERS_VAR: HTTP协议头的参数名</li>
+<li>$HEADERS_VAR_X: 正则匹配的HTTP协议头的参数名</li>
+<li>BODY: POST的整个参数内容</li>
+<li>$BODY_VAR: POST参数的参数名</li>
+<li>$BODY_VAR_X: 正则匹配的POST参数的参数名</li>
+<li>URL(整个链接?前的部分链接)</li>
+<li>$URL:域名后的路径</li>
+<li>$URL_X: 正则匹配的URL(整个链接?前的部分链接)</li>
+<li>FILE_EXT: 文件名 (POST上传文件时上传的文件名)</li>
+<li>RAW_BODY: HTTP请求的BODY部分的原始的未解析的内容</li>
+</ul>
+<h2 id="白名单规则示例"><a href="#白名单规则示例" class="headerlink" title="白名单规则示例"></a>白名单规则示例</h2><p>以下对静态的白名单规则进行举例说明。</p>
+<ol>
+<li><p>BasicRule wl:1000;</p>
+<p>已知拦截规则1000是过滤包含select|union|update|delete|insert|table|from|ascii|hex|unhex之类SQL关键字的规则。</p>
+<p>在本子规则中完全禁用拦截规则1000。因为没有指定区域，所以全部加入白名单。</p>
+</li>
+</ol>
+<ol start="2">
+<li><p>BasicRule wl:1000 “mz:$ARGS_VAR:foo”;</p>
+<p>在全部GET参数名为foo的值中禁用拦截规则1000 (即不用1000规则检查GET中参数名为foo中的值)。所以, <a href="http://127.0.0.1/?foo=select" target="_blank" rel="noopener">http://127.0.0.1/?foo=select</a> * from a 不会被过滤。</p>
+</li>
+<li><p>BasicRule wl:1000 “mz:$ARGS_VAR:foo|$URL:/bar”;</p>
+<p>在URL为/bar的GET请求中参数名为foo的值中禁用拦截规则1000。所以, <a href="http://127.0.0.1/bar?foo=select" target="_blank" rel="noopener">http://127.0.0.1/bar?foo=select</a> * from a 不会被过滤。</p>
+</li>
+<li><p>BasicRule wl:1000 “mz:$URL:/bar|ARGS”;</p>
+<p>在URL为/bar的GET请求中的参数禁用拦截规则1000。所以, <a href="http://127.0.0.1/bar?my=select" target="_blank" rel="noopener">http://127.0.0.1/bar?my=select</a> * from a 不会被过滤。<a href="http://127.0.0.1/bar?from=weibo" target="_blank" rel="noopener">http://127.0.0.1/bar?from=weibo</a> 也不会被过滤。</p>
+</li>
+<li><p>BasicRule wl:1000 “mz:ARGS|NAME”;</p>
+<p>在全部GET请求中对所有参数名(只是名，不包含参数值)中禁用拦截规则1000。所以, <a href="http://127.0.0.1?from=weibo" target="_blank" rel="noopener">http://127.0.0.1?from=weibo</a> 不会被过滤。但是, <a href="http://127.0.0.1?foo=select" target="_blank" rel="noopener">http://127.0.0.1?foo=select</a> 会被过滤(因为select属于参数值，不在白名单范围内)。</p>
+</li>
+<li><p>BasicRule wl:1000 “mz:$URL:/bar|ARGS|NAME”;</p>
+<p>在URL为/bar的全部GET请求中对所有参数名(只是名，不包含参数值)中禁用拦截规则1000。所以, <a href="http://127.0.0.1/bar?from=weibo" target="_blank" rel="noopener">http://127.0.0.1/bar?from=weibo</a> 不会被过滤。但是, <a href="http://127.0.0.1/bar?foo=select" target="_blank" rel="noopener">http://127.0.0.1/bar?foo=select</a> 会被过滤(因为select属于参数值，不在白名单范围内)。</p>
+</li>
+<li><p>BasicRule wl:0 “mz:$URL_X:^/upload/(.<em>).(.</em>)$|URL”;</p>
+<p>在全部请求中对符合^/upload/(.<em>).(.</em>)$正则规则的URL禁用全部拦截规则。所以, <a href="http://127.0.0.1/upload/select.db" target="_blank" rel="noopener">http://127.0.0.1/upload/select.db</a> 不会被过滤 (原本会触发1000拦截规则)。</p>
+</li>
+</ol>
+<p>以下对含正则表达式的白名单规则进行举例说明。</p>
+<ol>
+<li><p>BasicRule wl:1000 “mz:$ARGS_VAR_X:meh”;</p>
+<p>在全部GET参数名含有meh的值中禁用拦截规则1000 (即不用1000规则检查GET中参数名含有meh中的值)。所以, <a href="http://127.0.0.1/?smehe=select" target="_blank" rel="noopener">http://127.0.0.1/?smehe=select</a> * from a 不会被过滤。</p>
+</li>
+<li><p>BasicRule wl:1000 “mz:$ARGS_VAR_X:^meh”;</p>
+<p>在全部GET参数名以meh开始的值中禁用拦截规则1000 (即不用1000规则检查GET中参数名以meh开始的值)。所以, <a href="http://127.0.0.1/?mehe=select" target="_blank" rel="noopener">http://127.0.0.1/?mehe=select</a> * from a 不会被过滤。</p>
+</li>
+<li><p>BasicRule wl:1000 “mz:$ARGS_VAR_X:^meh_[0-9]+$”</p>
+<p>在全部GET参数名格式为“meh_数字”的值中禁用拦截规则1000 (即不用1000规则检查GET中参数名格式为“meh_数字”的值)。所以, <a href="http://127.0.0.1/?meh_12=select" target="_blank" rel="noopener">http://127.0.0.1/?meh_12=select</a> * from a 不会被过滤。</p>
+</li>
+<li><p>BasicRule wl:1000 “mz:$URL_X:^/foo|ARGS”;</p>
+<p>在URL以/foo开始的GET请求中的参数禁用拦截规则1000。所以, <a href="http://127.0.0.1/foo1?my=select" target="_blank" rel="noopener">http://127.0.0.1/foo1?my=select</a> * from a 不会被过滤。<a href="http://127.0.0.1/foo2?from=weibo" target="_blank" rel="noopener">http://127.0.0.1/foo2?from=weibo</a> 也不会被过滤。</p>
+</li>
+<li><p>BasicRule wl:1000 “mz:$URL_X:^/foo|$ARGS_VAR_X:^[0-9]”;</p>
+<p>在URL以/foo开始的GET请求中的以数字开始命名的参数禁用拦截规则1000。所以, <a href="http://127.0.0.1/foo1?2my=select" target="_blank" rel="noopener">http://127.0.0.1/foo1?2my=select</a> * from a 不会被过滤。<a href="http://127.0.0.1/foo2?1from=weibo" target="_blank" rel="noopener">http://127.0.0.1/foo2?1from=weibo</a> 也不会被过滤。</p>
+</li>
+</ol>
+<p>以下对RAW_BODY的白名单规则进行举例说明。以RAW_BODY为目标的白名单规则的编写方式与任何其他BODY规则相同。</p>
+<ol>
+<li><p>BasicRule wl:4241 “mz:$URL:/|BODY”; </p>
+<p>已知拦截规则4241是即便在学习模式下也要过滤RAW_BODT中包含字符串RANDOMTHINGS的规则。<br>在本子规则中，在URL为/的BODY中的内容禁用拦截规则4241，意味着该目录下的任意BODY内容都不会被过滤。</p>
+</li>
+</ol>
+<p>以下对FILE_EXT的白名单规则进行举例说明。</p>
+<ol>
+<li><p>BasicRule wl:1337 “mz:$URL:/index.html|FILE_EXT”;</p>
+<p>在本子规则中，在URL为/index.html的文件上传部分禁用拦截规则1337，意味着可在该目录下上传任意文件。</p>
+</li>
+</ol>
+<p>以下对JSON的白名单规则进行举例说明。</p>
+<ol>
+<li><p>BasicRule wl:1302 “mz:$BODY_VAR:lol”;</p>
+<p>JSON可被当作BODY, 以变量的形式表示文本内容。在本子规则中，对POST的参数lol禁用拦截规则1302，即以下JSON内容可以被通过。</p>
+<p> {</p>
+<pre><code>&quot;lol&quot; : &quot;foo&lt;bar&quot;</code></pre><p> }</p>
+</li>
+</ol>
+<h2 id="手动编写白名单规则"><a href="#手动编写白名单规则" class="headerlink" title="手动编写白名单规则"></a>手动编写白名单规则</h2><p>以下为访问<a href="http://yourwebsiteaddress/?foo=select" target="_blank" rel="noopener">http://yourwebsiteaddress/?foo=select</a> * from a的错误日志记录。</p>
+<pre><code>2018/08/19 13:35:16 [error] 1#0: *187 NAXSI_FMT: ip=*.*.*.*&amp;server=yourwebsiteaddress&amp;uri=/&amp;learning=0&amp;vers=0.55.3&amp;total_processed=116&amp;total_blocked=1&amp;block=1&amp;cscore0=$SQL&amp;score0=4&amp;cscore1=$XSS&amp;score1=8&amp;zone0=ARGS&amp;id0=1000&amp;var_name0=foo, client: 10.30.169.105, server: bkjy.xmu.edu.cn, request: &quot;GET /?a=select%20*%20from%20a HTTP/1.1&quot;, host: &quot;bkjy.xmu.edu.cn&quot;</code></pre><p>从zone0=ARGS可看出被过滤的区域是ARGS，从id0=1000可看出拦截规则的id是1000，从var_name0=foo可看出被过滤的变量为foo。因此可以编写如下白名单规则。</p>
+<pre><code>BasicRule wl:1000 &quot;mz:$ARGS_VAR:foo&quot;;</code></pre><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>1.<a href="https://github.com/nbs-system/naxsi/wiki" target="_blank" rel="noopener">Naxsi Wiki</a><br>2.<a href="https://blog.micblo.com/2015/07/19/NGINX%E7%9A%84WAF%E6%A8%A1%E5%9D%97-Naxsi-%E9%85%8D%E7%BD%AE%E7%99%BD%E5%90%8D%E5%8D%95-2/" target="_blank" rel="noopener">NGINX的WAF模块-Naxsi 配置白名单</a><br>3.<a href="https://github.com/nbs-system/naxsi/wiki/whitelists-bnf" target="_blank" rel="noopener">whitelists-bnf</a><br>4.<a href="https://github.com/nbs-system/naxsi/wiki/matchzones-bnf" target="_blank" rel="noopener">matchzones-bnf</a><br>5.<a href="https://github.com/nbs-system/naxsi/wiki/whitelists-examples" target="_blank" rel="noopener">whitelists-examples</a></p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#Web安全" >
+    <span class="tag-code">Web安全</span>
+  </a>
+
+  <a href="/tags#Naxsi" >
+    <span class="tag-code">Naxsi</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2018/08/19/Nginx%E4%B8%8B%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEWAF-Naxsi/">
+        <span class="nav-arrow">← </span>
+        
+          Nginx下安装配置WAF Naxsi
+        
+      </a>
+    
+    
+      <a class="nav-right" href="/2018/09/05/CentOS7%E4%B8%8B%E5%AE%89%E8%A3%85%E5%92%8C%E4%BD%BF%E7%94%A8Fail2ban/">
+        
+          CentOS7下安装和使用Fail2ban
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#白名单规则配置"><span class="toc-nav-text">白名单规则配置</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#白名单规则语法"><span class="toc-nav-text">白名单规则语法</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Whitelisted-ID-wl-…"><span class="toc-nav-text">Whitelisted ID (wl:…)</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#MatchZone-mz-…"><span class="toc-nav-text">MatchZone (mz:…)</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#白名单规则示例"><span class="toc-nav-text">白名单规则示例</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#手动编写白名单规则"><span class="toc-nav-text">手动编写白名单规则</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#参考资料"><span class="toc-nav-text">参考资料</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2018/08/21/Naxsi-配置白名单/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+     // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+        
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+
+    // qrcode
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+
+    // gitment
+    var gitmentConfig = "bolerolily";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "Naxsi 配置白名单",
+        owner: "bolerolily",
+        repo: "bolerolily.github.io",
+        oauth: {
+          client_id: "6b74b4aafe5873e44db3",
+          client_secret: "b13589164412f089a62a44b1cbb6d785b05d5a4c"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  })();
+</script>
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 <a href="https://github.com/bolerolily" target="_blank" rel="noopener">bolerolily</a> | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
